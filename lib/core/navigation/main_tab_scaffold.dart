@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/animation.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/profile/presentation/screens/profile_dashboard_screen.dart';
 import '../../core/navigation/app_navigator.dart';
@@ -11,8 +12,32 @@ class MainTabScaffold extends StatefulWidget {
   State<MainTabScaffold> createState() => _MainTabScaffoldState();
 }
 
-class _MainTabScaffoldState extends State<MainTabScaffold> {
+class _MainTabScaffoldState extends State<MainTabScaffold> with TickerProviderStateMixin {
   int _currentIndex = 0;
+  late AnimationController _addIconController;
+  late Animation<double> _addIconScale;
+  late Animation<double> _addIconGlow;
+
+  @override
+  void initState() {
+    super.initState();
+    _addIconController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _addIconScale = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _addIconController, curve: Curves.easeInOut),
+    );
+    _addIconGlow = Tween<double>(begin: 0.3, end: 0.6).animate(
+      CurvedAnimation(parent: _addIconController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _addIconController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +63,14 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                 color: CupertinoColors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: CupertinoColors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
+                    color: CupertinoColors.black.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, -3),
+                  ),
+                  BoxShadow(
+                    color: CupertinoColors.black.withOpacity(0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, -1),
                   ),
                 ],
               ),
@@ -51,7 +81,10 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                   children: [
                     // Service Tab
                     Expanded(
-                      child: CupertinoButton(
+                      child: AnimatedOpacity(
+                        opacity: _currentIndex == 0 ? 1.0 : 0.6,
+                        duration: const Duration(milliseconds: 200),
+                        child: CupertinoButton(
                         padding: EdgeInsets.zero,
                         onPressed: () {
                           setState(() => _currentIndex = 0);
@@ -76,52 +109,64 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                         ),
                       ),
                     ),
-                    // Large Add New Button in Center (no tilt or rotation)
-                    Container(
-                      width: 64,
-                      height: 64,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: AppColors.actionBlue,
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.actionBlue,
-                            AppColors.actionBlue.withOpacity(0.8),
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.actionBlue.withOpacity(0.4),
-                            blurRadius: 12,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 4),
+                    ),
+                    // Large Add New Button in Center with pulse/glow effect
+                    AnimatedBuilder(
+                      animation: _addIconController,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _addIconScale.value,
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              color: AppColors.actionBlue,
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.actionBlue,
+                                  AppColors.actionBlue.withOpacity(0.85),
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.actionBlue.withOpacity(0.35 + _addIconGlow.value),
+                                  blurRadius: 14,
+                                  spreadRadius: 2,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: AppColors.actionBlue.withOpacity(0.15 + _addIconGlow.value * 0.15),
+                                  blurRadius: 24,
+                                  spreadRadius: 4,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                AppNavigator.pushAddItem(context);
+                              },
+                              child: const Icon(
+                                CupertinoIcons.add,
+                                color: CupertinoColors.white,
+                                size: 32,
+                              ),
+                            ),
                           ),
-                          BoxShadow(
-                            color: AppColors.actionBlue.withOpacity(0.2),
-                            blurRadius: 20,
-                            spreadRadius: 4,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          AppNavigator.pushAddItem(context);
-                        },
-                        child: const Icon(
-                          CupertinoIcons.add,
-                          color: CupertinoColors.white,
-                          size: 32,
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     // Account Tab
                     Expanded(
-                      child: CupertinoButton(
+                      child: AnimatedOpacity(
+                        opacity: _currentIndex == 2 ? 1.0 : 0.6,
+                        duration: const Duration(milliseconds: 200),
+                        child: CupertinoButton(
                         padding: EdgeInsets.zero,
                         onPressed: () {
                           setState(() => _currentIndex = 2);
@@ -145,6 +190,7 @@ class _MainTabScaffoldState extends State<MainTabScaffold> {
                           ],
                         ),
                       ),
+                    ),
                     ),
                   ],
                 ),

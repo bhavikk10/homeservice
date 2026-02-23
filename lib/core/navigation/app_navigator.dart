@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/location_access_screen.dart';
 import '../../features/asset_inventory/presentation/screens/inventory_instruction_screen.dart';
 import '../../features/asset_inventory/presentation/screens/scanning_results_screen.dart';
 import '../../features/service/presentation/screens/service_detail_screen.dart';
+import '../../features/service/presentation/screens/service_subcategory_screen.dart';
 import '../../features/service/presentation/screens/capture_problem_screen.dart';
 import '../../features/service/presentation/screens/tracking_timeline_screen.dart';
 import '../../features/profile/presentation/screens/user_details_screen.dart';
@@ -52,6 +53,25 @@ class AppNavigator {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (_) => ServiceDetailScreen(serviceName: serviceName),
+      ),
+    );
+  }
+
+  static void pushServiceSubCategory(
+    BuildContext context, {
+    required String serviceName,
+    required String categoryName,
+    required List<String> items,
+    IconData icon = CupertinoIcons.square_grid_2x2,
+  }) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (_) => ServiceSubCategoryScreen(
+          serviceName: serviceName,
+          categoryName: categoryName,
+          items: items,
+          icon: icon,
+        ),
       ),
     );
   }

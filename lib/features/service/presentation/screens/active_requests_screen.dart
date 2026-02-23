@@ -51,6 +51,7 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
       backgroundColor: const Color(0xFFF9FAFB),
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.white,
+        border: null,
         leading: CupertinoNavigationBarBackButton(
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -85,7 +86,16 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
           children: [
             // Tabs: Active and Past
             Container(
-              color: CupertinoColors.white,
+              decoration: BoxDecoration(
+                color: CupertinoColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: CupertinoColors.black.withOpacity(0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -103,7 +113,7 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
                           border: Border(
                             bottom: BorderSide(
                               color: _selectedTab == 0 ? AppColors.actionBlue : CupertinoColors.transparent,
-                              width: 2,
+                              width: 2.5,
                             ),
                           ),
                         ),
@@ -131,7 +141,7 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
                           border: Border(
                             bottom: BorderSide(
                               color: _selectedTab == 1 ? AppColors.actionBlue : CupertinoColors.transparent,
-                              width: 2,
+                              width: 2.5,
                             ),
                           ),
                         ),
@@ -227,9 +237,14 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: CupertinoColors.black.withOpacity(0.06),
+            blurRadius: 12,
             offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -249,6 +264,13 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
                 decoration: BoxDecoration(
                   color: statusBgColor,
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: statusColor.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
                 child: Text(
                   statusText,
@@ -289,6 +311,13 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
                 decoration: BoxDecoration(
                   color: CupertinoColors.systemGrey5,
                   borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CupertinoColors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: request.imagePaths != null && request.imagePaths!.isNotEmpty
                     ? ClipRRect(
@@ -373,9 +402,14 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: CupertinoColors.black.withOpacity(0.06),
+            blurRadius: 12,
             offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -390,12 +424,19 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
                 '${_getMonthName(request.timestamp.month)} ${request.timestamp.day}, ${request.timestamp.year} • ${_formatTime(request.timestamp)}',
                 style: AppTextStyles.subtext.copyWith(fontSize: 12),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.successGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.successGreen.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.successGreen.withOpacity(0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
                 ),
+              ],
+            ),
                 child: Text(
                   'Completed',
                   style: AppTextStyles.subtext.copyWith(
@@ -426,6 +467,13 @@ class _ActiveRequestsScreenState extends ConsumerState<ActiveRequestsScreen> wit
             decoration: BoxDecoration(
               color: AppColors.backgroundLight,
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: CupertinoColors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

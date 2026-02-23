@@ -97,9 +97,14 @@ class SubscriptionPlansScreen extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: CupertinoColors.black.withOpacity(0.06),
+            blurRadius: 12,
             offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -156,6 +161,13 @@ class SubscriptionPlansScreen extends StatelessWidget {
         color: CupertinoColors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [

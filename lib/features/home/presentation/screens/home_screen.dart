@@ -75,6 +75,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   decoration: BoxDecoration(
                     color: AppColors.backgroundLight,
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: CupertinoColors.black.withOpacity(0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: CupertinoTextField(
                     placeholder: 'Search services...',
@@ -99,6 +106,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.actionBlue.withOpacity(0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,6 +132,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           decoration: BoxDecoration(
                             color: CupertinoColors.white,
                             borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: CupertinoColors.black.withOpacity(0.08),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Text(
                             'Book Now',
@@ -166,31 +187,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _buildServiceCard(context, 'Cleaning', CupertinoIcons.sparkles),
                   ],
                 ),
-                const SizedBox(height: 24),
-                // Home Guarantee - Dark blue card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F172A), // Dark Navy
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(CupertinoIcons.check_mark_circled_solid, color: CupertinoColors.white, size: 20),
-                          const SizedBox(width: 8),
-                          Text('Home Guarantee', style: AppTextStyles.header.copyWith(color: CupertinoColors.white)),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildGuaranteeItem(CupertinoIcons.check_mark_circled_solid, 'Service Warranty', 'Up to 30 days coverage'),
-                      const SizedBox(height: 12),
-                      _buildGuaranteeItem(CupertinoIcons.person_fill, 'Expert Professionals', 'Background checked technicians'),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
@@ -201,14 +197,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildServiceCard(BuildContext context, String title, IconData icon) {
-    // Service images from assets/categories (electrician.jpg, plumber.webp, etc.)
-    final serviceImages = {
-      'Electrician': 'assets/categories/electrician.jpg',
-      'Plumber': 'assets/categories/plumber.webp',
-      'Carpenter': 'assets/categories/carpenter.png',
-      'Dry Cleaning': 'assets/categories/dry_cleaning.jpg',
-      'Pest Control': 'assets/categories/pest_control.jpg',
-      'Cleaning': 'assets/categories/cleaning.webp',
+    // Network placeholder images - visible when assets are missing
+    final serviceImages = <String, String>{
+      'Electrician': 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=400',
+      'Plumber': 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400',
+      'Carpenter': 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'Dry Cleaning': 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400',
+      'Pest Control': 'https://media.istockphoto.com/id/486726853/photo/ironing-with-garment-steamer.jpg?s=612x612&w=0&k=20&c=t8NvfBAcpD3fb7iQfsEZRfh9YT1txiFR9aAJTJORy3o=',
+      'Cleaning': 'https://static.vecteezy.com/system/resources/thumbnails/074/448/133/small/a-woman-in-yellow-gloves-cleans-the-kitchen-counter-with-a-yellow-cloth-showcasing-a-bright-and-tidy-atmosphere-photo.jpeg',
     };
 
     return TweenAnimationBuilder<double>(
@@ -220,10 +216,66 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: Opacity(opacity: value, child: child),
         );
       },
-      child: GestureDetector(
+      child: _AnimatedServiceCard(
         onTap: () {
           AppNavigator.pushServiceDetail(context, title);
         },
+        icon: icon,
+        title: title,
+        serviceImages: serviceImages,
+      ),
+    );
+  }
+}
+
+class _AnimatedServiceCard extends StatefulWidget {
+  final VoidCallback onTap;
+  final IconData icon;
+  final String title;
+  final Map<String, String> serviceImages;
+
+  const _AnimatedServiceCard({
+    required this.onTap,
+    required this.icon,
+    required this.title,
+    required this.serviceImages,
+  });
+
+  @override
+  State<_AnimatedServiceCard> createState() => _AnimatedServiceCardState();
+}
+
+class _AnimatedServiceCardState extends State<_AnimatedServiceCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
         child: Container(
         decoration: BoxDecoration(
           color: CupertinoColors.white,
@@ -248,26 +300,38 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   color: const Color(0xFFEEF2FF),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: serviceImages.containsKey(title)
-                    ? Image.asset(
-                        serviceImages[title]!,
+                child: widget.serviceImages.containsKey(widget.title)
+                    ? Image.network(
+                        widget.serviceImages[widget.title]!,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: const Color(0xFFEEF2FF),
+                            child: Center(
+                              child: CupertinoActivityIndicator(
+                                color: AppColors.actionBlue,
+                                radius: 12,
+                              ),
+                            ),
+                          );
+                        },
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
                             color: const Color(0xFFEEF2FF),
-                            child: Icon(icon, color: AppColors.actionBlue, size: 32),
+                            child: Icon(widget.icon, color: AppColors.actionBlue, size: 32),
                           );
                         },
                       )
                     : Container(
                         color: const Color(0xFFEEF2FF),
-                        child: Icon(icon, color: AppColors.actionBlue, size: 32),
+                        child: Icon(widget.icon, color: AppColors.actionBlue, size: 32),
                       ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(12),
-              child: Text(title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+              child: Text(widget.title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -276,19 +340,4 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildGuaranteeItem(IconData icon, String title, String subtitle) {
-    return Row(
-      children: [
-        Icon(icon, color: CupertinoColors.systemBlue, size: 16),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: AppTextStyles.body.copyWith(color: CupertinoColors.white, fontSize: 13)),
-            Text(subtitle, style: AppTextStyles.subtext.copyWith(color: CupertinoColors.white.withOpacity(0.7), fontSize: 11)),
-          ],
-        ),
-      ],
-    );
-  }
 }

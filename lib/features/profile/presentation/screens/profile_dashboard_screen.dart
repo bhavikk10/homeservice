@@ -1,18 +1,46 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/providers/profile_provider.dart';
 import '../../../../core/navigation/app_navigator.dart';
 
-class ProfileDashboardScreen extends ConsumerWidget {
+class ProfileDashboardScreen extends ConsumerStatefulWidget {
   const ProfileDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileDashboardScreen> createState() => _ProfileDashboardScreenState();
+}
+
+class _ProfileDashboardScreenState extends ConsumerState<ProfileDashboardScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profile = ref.watch(profileProvider).profile;
 
-    return CupertinoPageScaffold(
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: CupertinoPageScaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.white,
@@ -83,9 +111,14 @@ class ProfileDashboardScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: CupertinoColors.black.withOpacity(0.05),
-                      blurRadius: 10,
+                      color: CupertinoColors.black.withOpacity(0.06),
+                      blurRadius: 12,
                       offset: const Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: CupertinoColors.black.withOpacity(0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -103,6 +136,13 @@ class ProfileDashboardScreen extends ConsumerWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: const Color(0xFFFDE8E8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CupertinoColors.black.withOpacity(0.08),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                               image: profile?.avatarUrl != null
                                   ? DecorationImage(
                                       image: NetworkImage(profile!.avatarUrl!),
@@ -124,9 +164,16 @@ class ProfileDashboardScreen extends ConsumerWidget {
                             right: 0,
                             child: Container(
                               padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.actionBlue,
                                 shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.actionBlue.withOpacity(0.4),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: const Icon(
                                 CupertinoIcons.pencil,
@@ -186,20 +233,27 @@ class ProfileDashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: CupertinoColors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: CupertinoColors.black.withOpacity(0.05),
-                      blurRadius: 10,
+                      color: CupertinoColors.black.withOpacity(0.06),
+                      blurRadius: 12,
                       offset: const Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: CupertinoColors.black.withOpacity(0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildDetailRowLeft('NAME', 'Alex Johnson'),
                     const SizedBox(height: 16),
@@ -230,6 +284,13 @@ class ProfileDashboardScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFE5E5),
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CupertinoColors.destructiveRed.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: CupertinoButton(
                   padding: EdgeInsets.zero,
@@ -252,6 +313,7 @@ class ProfileDashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -261,6 +323,13 @@ class ProfileDashboardScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.actionBlue.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.actionBlue.withOpacity(0.08),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Text(text, style: AppTextStyles.subtext.copyWith(color: AppColors.actionBlue, fontWeight: FontWeight.w600)),
     );
@@ -291,13 +360,19 @@ class ProfileDashboardScreen extends ConsumerWidget {
           color: CupertinoColors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: isActive ? AppColors.actionBlue : AppColors.border, width: isActive ? 2 : 1),
-          boxShadow: isActive ? [
+          boxShadow: [
             BoxShadow(
-              color: AppColors.actionBlue.withOpacity(0.1),
-              blurRadius: 8,
+              color: isActive ? AppColors.actionBlue.withOpacity(0.12) : CupertinoColors.black.withOpacity(0.04),
+              blurRadius: isActive ? 10 : 8,
               offset: const Offset(0, 2),
             ),
-          ] : null,
+            if (!isActive)
+              BoxShadow(
+                color: CupertinoColors.black.withOpacity(0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+          ],
         ),
         child: Row(
           children: [
@@ -372,6 +447,13 @@ class ProfileDashboardScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: CupertinoColors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
